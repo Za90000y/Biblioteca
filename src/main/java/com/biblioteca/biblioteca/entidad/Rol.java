@@ -1,6 +1,6 @@
 package com.biblioteca.biblioteca.entidad;
 
 public enum Rol {
-    ADMIN,
+    BIBLIOTECARIO,
     LECTOR
 }

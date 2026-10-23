@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+.hero-banner {
+  min-height: 220px;
+  background: #1e404f;
+  color: #fff;
+}
+
+.hero-content {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 6vw, 3.8rem);
+  font-weight: 600;
+}
+
+.hero-copy p {
+  margin: 0.55rem 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.05rem;
+}

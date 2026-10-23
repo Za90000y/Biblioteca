@@ -1,0 +1,48 @@
+<section class="admin-section">
+  <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-3 mb-4">
+    <div>
+      <span class="admin-kicker">Colecciones y personas</span>
+      <h2 class="admin-title mb-1">Gestión de Autores</h2>
+      <p class="text-secondary mb-0">Autores cargados desde el backend.</p>
+    </div>
+    <button class="btn btn-library px-4" type="button" (click)="nuevo()">
+      <i class="bi bi-plus-lg me-2"></i>Nuevo Autor
+    </button>
+  </div>
+
+  @if (error) { <div class="alert alert-danger" role="alert">{{ error }}</div> }
+  <div class="text-secondary small mb-3">{{ autores.length }} autores registrados</div>
+  <div class="table-responsive border rounded mb-4">
+    <table class="table admin-table align-middle mb-0">
+      <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Nacionalidad</th><th>Fecha de nacimiento</th><th>Acciones</th></tr></thead>
+      <tbody>
+        @if (cargando) {
+          <tr><td class="py-4 text-center text-secondary" colspan="6">Consultando autores...</td></tr>
+        } @else if (autores.length === 0) {
+          <tr><td class="py-4 text-center text-secondary" colspan="6">El backend no tiene autores registrados.</td></tr>
+        } @else {
+          @for (autor of autores; track autor.id) {
+            <tr>
+              <td>{{ autor.id }}</td><td>{{ autor.nombre }}</td><td>{{ autor.apellido }}</td><td>{{ autor.nacionalidad }}</td><td>{{ autor.fechaNacimiento }}</td>
+              <td><div class="action-buttons"><button class="btn btn-outline-library" type="button" aria-label="Editar autor" (click)="editar(autor)"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" type="button" aria-label="Eliminar autor" (click)="eliminar(autor)"><i class="bi bi-trash"></i></button></div></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <form class="admin-form" (ngSubmit)="guardar()" #autorForm="ngForm">
+    <div class="mb-3"><span class="admin-kicker">Ficha de autor</span><h3 class="h5 text-dark mb-0">{{ actualId === null ? 'Nuevo autor' : 'Editar autor' }}</h3></div>
+    <div class="row g-3">
+      <div class="col-12 col-md-6"><label class="form-label" for="autor-nombre">Nombre</label><input id="autor-nombre" name="nombre" class="form-control" type="text" maxlength="80" required [(ngModel)]="formulario.nombre"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="autor-apellido">Apellido</label><input id="autor-apellido" name="apellido" class="form-control" type="text" maxlength="80" required [(ngModel)]="formulario.apellido"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="autor-nacionalidad">Nacionalidad</label><input id="autor-nacionalidad" name="nacionalidad" class="form-control" type="text" maxlength="80" required [(ngModel)]="formulario.nacionalidad"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="autor-fecha">Fecha de nacimiento</label><input id="autor-fecha" name="fechaNacimiento" class="form-control" type="date" [max]="'9999-12-31'" required [(ngModel)]="formulario.fechaNacimiento"></div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        @if (actualId !== null) { <button class="btn btn-outline-library" type="button" (click)="nuevo()">Cancelar</button> }
+        <button class="btn btn-library px-4" type="submit" [disabled]="autorForm.invalid || guardando"><i class="bi bi-check2 me-2"></i>{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </form>
+</section>

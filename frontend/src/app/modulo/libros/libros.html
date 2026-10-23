@@ -1,0 +1,44 @@
+<section class="admin-section">
+  <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+    <div><span class="admin-kicker">Catálogo de lectura</span><h2 class="admin-title mb-1">Gestión de Libros</h2><p class="text-secondary mb-0">Registros consultados desde el backend.</p></div>
+    <button class="btn btn-library px-4" type="button" (click)="nuevo()"><i class="bi bi-plus-lg me-2"></i>Nuevo Libro</button>
+  </div>
+
+  @if (error) { <div class="alert alert-danger" role="alert">{{ error }}</div> }
+  <div class="row g-3 align-items-center mb-3">
+    <div class="col-12 col-md-6 col-lg-5"><form (ngSubmit)="buscar()"><label class="visually-hidden" for="buscar-libro">Buscar libro por título</label><div class="input-group"><input id="buscar-libro" name="filtro" class="form-control" type="search" [(ngModel)]="filtro" placeholder="Buscar por título"><button class="btn btn-outline-library" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button></div></form></div>
+    <div class="col-md-auto ms-md-auto text-secondary small">{{ libros.length }} en esta página</div>
+  </div>
+
+  <div class="table-responsive border rounded mb-3">
+    <table class="table admin-table align-middle mb-0">
+      <thead><tr><th>ID</th><th>Título</th><th>ISBN</th><th>Año</th><th>Autor</th><th>Acciones</th></tr></thead>
+      <tbody>
+        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="6">Consultando catálogo...</td></tr> }
+        @else if (libros.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="6">El backend no tiene libros para mostrar.</td></tr> }
+        @else { @for (libro of libros; track libro.id) {
+          <tr><td>{{ libro.id }}</td><td>{{ libro.titulo }}</td><td>{{ libro.isbn }}</td><td>{{ libro.anio }}</td><td>{{ libro.autor.nombre }} {{ libro.autor.apellido }}</td><td><div class="action-buttons"><button class="btn btn-outline-library" type="button" aria-label="Editar libro" (click)="editar(libro)"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" type="button" aria-label="Eliminar libro" (click)="eliminar(libro)"><i class="bi bi-trash"></i></button></div></td></tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end align-items-center gap-3 mb-4">
+    <button class="btn btn-outline-library" type="button" [disabled]="paginaActual === 0 || cargando" (click)="cambiarPagina(paginaActual - 1)"><i class="bi bi-chevron-left"></i></button>
+    <span class="small text-secondary">Página {{ paginaActual + 1 }} de {{ totalPaginas || 1 }}</span>
+    <button class="btn btn-outline-library" type="button" [disabled]="paginaActual + 1 >= totalPaginas || cargando" (click)="cambiarPagina(paginaActual + 1)"><i class="bi bi-chevron-right"></i></button>
+  </div>
+
+  <form class="admin-form" (ngSubmit)="guardar()" #libroForm="ngForm">
+    <div class="mb-3"><span class="admin-kicker">Ficha bibliográfica</span><h3 class="h5 text-dark mb-0">{{ actualId === null ? 'Nuevo libro' : 'Editar libro' }}</h3></div>
+    <div class="row g-3">
+      <div class="col-12 col-md-6"><label class="form-label" for="libro-titulo">Título</label><input id="libro-titulo" name="titulo" class="form-control" type="text" maxlength="200" required [(ngModel)]="formulario.titulo"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="libro-isbn">ISBN</label><input id="libro-isbn" name="isbn" class="form-control" type="text" maxlength="20" required [(ngModel)]="formulario.isbn"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="libro-anio">Año</label><input id="libro-anio" name="anio" class="form-control" type="number" min="1" max="9999" required [(ngModel)]="formulario.anio"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="libro-autor">Autor</label><select id="libro-autor" name="autorId" class="form-select" required [(ngModel)]="formulario.autorId"><option [ngValue]="0" disabled>Selecciona un autor</option>@for (autor of autores; track autor.id) { <option [ngValue]="autor.id">{{ autor.nombre }} {{ autor.apellido }}</option> }</select></div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        @if (actualId !== null) { <button class="btn btn-outline-library" type="button" (click)="nuevo()">Cancelar</button> }
+        <button class="btn btn-library px-4" type="submit" [disabled]="libroForm.invalid || formulario.autorId === 0 || guardando || autores.length === 0"><i class="bi bi-check2 me-2"></i>{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </form>
+</section>

@@ -1,0 +1,45 @@
+<section class="admin-section">
+  <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+    <div><span class="admin-kicker">Circulación de ejemplares</span><h2 class="admin-title mb-1">Gestión de Préstamos</h2><p class="text-secondary mb-0">Préstamos consultados desde el backend.</p></div>
+    <button class="btn btn-library px-4" type="button" (click)="nuevo()"><i class="bi bi-plus-lg me-2"></i>Nuevo Préstamo</button>
+  </div>
+
+  @if (error) { <div class="alert alert-danger" role="alert">{{ error }}</div> }
+  <div class="row g-3 align-items-center mb-3">
+    <div class="col-12 col-md-6 col-lg-5"><form (ngSubmit)="buscar()"><label class="visually-hidden" for="buscar-prestamo">Buscar por usuario</label><div class="input-group"><input id="buscar-prestamo" name="filtro" class="form-control" type="search" [(ngModel)]="filtro" placeholder="Buscar por usuario"><button class="btn btn-outline-library" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button></div></form></div>
+    <div class="col-md-auto ms-md-auto text-secondary small">{{ prestamos.length }} en esta página</div>
+  </div>
+
+  <div class="table-responsive border rounded mb-3">
+    <table class="table admin-table align-middle mb-0">
+      <thead><tr><th>ID</th><th>Libro</th><th>Usuario</th><th>Fecha préstamo</th><th>Fecha devolución</th><th>Devuelto</th><th>Acciones</th></tr></thead>
+      <tbody>
+        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="7">Consultando préstamos...</td></tr> }
+        @else if (prestamos.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="7">El backend no tiene préstamos para mostrar.</td></tr> }
+        @else { @for (prestamo of prestamos; track prestamo.id) {
+          <tr><td>{{ prestamo.id }}</td><td>{{ prestamo.libro.titulo }}</td><td>{{ prestamo.usuario.nombre }}</td><td>{{ prestamo.fechaPrestamo }}</td><td>{{ prestamo.fechaDevolucion || 'Pendiente' }}</td><td>{{ prestamo.devuelto ? 'Sí' : 'No' }}</td><td><div class="action-buttons"><button class="btn btn-outline-library" type="button" aria-label="Editar préstamo" (click)="editar(prestamo)"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" type="button" aria-label="Eliminar préstamo" (click)="eliminar(prestamo)"><i class="bi bi-trash"></i></button></div></td></tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end align-items-center gap-3 mb-4">
+    <button class="btn btn-outline-library" type="button" [disabled]="paginaActual === 0 || cargando" (click)="cambiarPagina(paginaActual - 1)"><i class="bi bi-chevron-left"></i></button>
+    <span class="small text-secondary">Página {{ paginaActual + 1 }} de {{ totalPaginas || 1 }}</span>
+    <button class="btn btn-outline-library" type="button" [disabled]="paginaActual + 1 >= totalPaginas || cargando" (click)="cambiarPagina(paginaActual + 1)"><i class="bi bi-chevron-right"></i></button>
+  </div>
+
+  <form class="admin-form" (ngSubmit)="guardar()" #prestamoForm="ngForm">
+    <div class="mb-3"><span class="admin-kicker">Registro de circulación</span><h3 class="h5 text-dark mb-0">{{ actualId === null ? 'Nuevo préstamo' : 'Editar préstamo' }}</h3></div>
+    <div class="row g-3">
+      <div class="col-12 col-md-6"><label class="form-label" for="prestamo-libro">Libro</label><select id="prestamo-libro" name="libroId" class="form-select" required [(ngModel)]="formulario.libroId"><option [ngValue]="0" disabled>Selecciona un libro</option>@for (libro of libros; track libro.id) { <option [ngValue]="libro.id">{{ libro.titulo }}</option> }</select></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="prestamo-usuario">Usuario activo</label><select id="prestamo-usuario" name="usuarioId" class="form-select" required [(ngModel)]="formulario.usuarioId"><option [ngValue]="0" disabled>Selecciona un usuario</option>@for (usuario of usuarios; track usuario.id) { <option [ngValue]="usuario.id">{{ usuario.nombre }} ({{ usuario.username }})</option> }</select></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="prestamo-fecha">Fecha préstamo</label><input id="prestamo-fecha" name="fechaPrestamo" class="form-control" type="date" [max]="'9999-12-31'" required [(ngModel)]="formulario.fechaPrestamo"></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="prestamo-devolucion">Fecha devolución</label><input id="prestamo-devolucion" name="fechaDevolucion" class="form-control" type="date" [min]="formulario.fechaPrestamo" [max]="'9999-12-31'" [(ngModel)]="formulario.fechaDevolucion"></div>
+      <div class="col-12 col-md-6 d-flex align-items-end"><div class="form-check form-switch mb-2"><input id="prestamo-devuelto" name="devuelto" class="form-check-input" type="checkbox" role="switch" [(ngModel)]="formulario.devuelto"><label class="form-check-label text-secondary" for="prestamo-devuelto">Devuelto</label></div></div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        @if (actualId !== null) { <button class="btn btn-outline-library" type="button" (click)="nuevo()">Cancelar</button> }
+        <button class="btn btn-library px-4" type="submit" [disabled]="prestamoForm.invalid || formulario.libroId === 0 || formulario.usuarioId === 0 || libros.length === 0 || usuarios.length === 0 || (formulario.devuelto && !formulario.fechaDevolucion) || guardando"><i class="bi bi-check2 me-2"></i>{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+      </div>
+    </div>
+  </form>
+</section>

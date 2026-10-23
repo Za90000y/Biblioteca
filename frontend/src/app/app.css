@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.page-view {
+  display: none;
+  min-height: 55vh;
+}
+
+main:not(:has(.page-view:target)) .page-view:first-child,
+main:has(.page-view:target) .page-view:target {
+  display: block;
+}

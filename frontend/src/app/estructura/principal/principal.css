@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+
+.welcome-section {
+  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  background: #f8f8f8;
+}
+
+.welcome-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.welcome-heading > div:first-child {
+  max-width: 690px;
+}
+
+.welcome-heading h2 {
+  margin: 0 0 0.7rem;
+  color: #1e404f;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 600;
+}
+
+.welcome-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: #718089;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.feature-card {
+  display: flex;
+  height: 100%;
+  min-height: 205px;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid #e6e9e7;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.feature-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 1.3rem;
+}
+
+.feature-olive {
+  background: rgba(152, 138, 32, 0.12);
+  color: #817515;
+}
+
+.feature-orange {
+  background: rgba(230, 105, 42, 0.12);
+  color: #d45a20;
+}
+
+.feature-green {
+  background: rgba(52, 104, 92, 0.12);
+  color: #34685c;
+}
+
+.feature-red {
+  background: rgba(204, 33, 50, 0.1);
+  color: #cc2132;
+}
+
+.feature-card h3 {
+  margin: 0 0 0.45rem;
+  color: #1e404f;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.feature-card p {
+  margin: 0 0 1.1rem;
+  color: #718089;
+  font-size: 0.88rem;
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  color: #34685c;
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.feature-link:hover {
+  color: #e6692a;
+}
+
+.library-image {
+  min-height: 150px;
+  border-radius: 0.75rem;
+  background: #34685c;
+}
+
+.library-image-caption {
+  display: flex;
+  min-height: 150px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem);
+  color: #fff;
+}
+
+.library-image-caption strong {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 500;
+}

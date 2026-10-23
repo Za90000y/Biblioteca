@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     username VARCHAR(50) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    rol VARCHAR(10) NOT NULL,
+    rol VARCHAR(20) NOT NULL,
     estado VARCHAR(10) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uk_usuario_username (username),

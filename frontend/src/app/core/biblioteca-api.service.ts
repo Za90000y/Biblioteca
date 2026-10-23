@@ -23,7 +23,7 @@ export interface Usuario {
   nombre: string;
   username: string;
   email: string;
-  rol: 'ADMIN' | 'LECTOR';
+  rol: 'BIBLIOTECARIO' | 'LECTOR';
   estado: 'ACTIVO' | 'INACTIVO';
 }
 

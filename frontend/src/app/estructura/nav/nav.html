@@ -5,10 +5,14 @@
     </a>
     <div class="nav-links">
       <a href="#inicio">Inicio</a>
-      <a href="#autores">Autores</a>
       <a href="#libros">Libros</a>
-      <a href="#usuarios">Usuarios</a>
-      <a href="#prestamos">Préstamos</a>
+      @if (bibliotecario) {
+        <a href="#autores">Autores</a>
+        <a href="#usuarios">Lectores</a>
+        <a href="#prestamos">Préstamos</a>
+      } @else {
+        <a href="#prestamos">Mis préstamos</a>
+      }
     </div>
   </div>
 </nav>

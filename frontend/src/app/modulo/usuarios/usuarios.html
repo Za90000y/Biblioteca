@@ -5,15 +5,38 @@
   </div>
 
   @if (error) { <div class="alert alert-danger" role="alert">{{ error }}</div> }
-  <div class="text-secondary small mb-3">{{ usuarios.length }} usuarios registrados</div>
+  <div class="text-secondary small mb-3">{{ usuarios.length }} lectores registrados</div>
   <div class="table-responsive border rounded mb-4">
     <table class="table admin-table align-middle mb-0">
-      <thead><tr><th>ID</th><th>Nombre</th><th>Username</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <thead><tr><th>ID</th><th>Nombre</th><th>Username</th><th>Email</th><th>Rol</th><th>Estado</th><th>Préstamos activos</th><th>Acciones</th></tr></thead>
       <tbody>
-        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="7">Consultando usuarios...</td></tr> }
-        @else if (usuarios.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="7">El backend no tiene usuarios registrados.</td></tr> }
+        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="8">Consultando lectores...</td></tr> }
+        @else if (usuarios.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="8">El backend no tiene lectores registrados.</td></tr> }
         @else { @for (usuario of usuarios; track usuario.id) {
-          <tr><td>{{ usuario.id }}</td><td class="fw-semibold text-dark">{{ usuario.nombre }}</td><td>{{ usuario.username }}</td><td>{{ usuario.email }}</td><td><span class="badge badge-library">{{ usuario.rol }}</span></td><td><span class="badge" [class.badge-success-soft]="usuario.estado === 'ACTIVO'" [class.badge-danger-soft]="usuario.estado === 'INACTIVO'">{{ usuario.estado }}</span></td><td><div class="action-buttons"><button class="btn btn-outline-library" type="button" aria-label="Editar usuario" (click)="editar(usuario)"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" type="button" aria-label="Eliminar usuario" (click)="eliminar(usuario)"><i class="bi bi-trash"></i></button></div></td></tr>
+          <tr>
+            <td>{{ usuario.id }}</td><td class="fw-semibold text-dark">{{ usuario.nombre }}</td>
+            <td>{{ usuario.username }}</td><td>{{ usuario.email }}</td>
+            <td><span class="badge badge-library">{{ usuario.rol }}</span></td>
+            <td><span class="badge" [class.badge-success-soft]="usuario.estado === 'ACTIVO'" [class.badge-danger-soft]="usuario.estado === 'INACTIVO'">{{ usuario.estado }}</span></td>
+            <td><button class="btn btn-outline-library btn-sm" type="button" (click)="mostrarPrestamos(usuario)">
+              {{ usuarioPrestamosId === usuario.id ? 'Ocultar' : 'Ver libros' }}
+            </button></td>
+            <td><div class="action-buttons"><button class="btn btn-outline-library" type="button" aria-label="Editar lector" (click)="editar(usuario)"><i class="bi bi-pencil"></i></button><button class="btn btn-outline-danger" type="button" aria-label="Eliminar lector" (click)="eliminar(usuario)"><i class="bi bi-trash"></i></button></div></td>
+          </tr>
+          @if (usuarioPrestamosId === usuario.id) {
+            <tr><td colspan="8" class="bg-light">
+              <strong>Libros prestados a {{ usuario.nombre }}</strong>
+              @if (cargandoPrestamos) { <span class="ms-2 text-secondary">Consultando...</span> }
+              @else if (prestamosDelUsuario.length === 0) { <span class="ms-2 text-secondary">No tiene libros prestados actualmente.</span> }
+              @else {
+                <ul class="mb-0 mt-2">
+                  @for (prestamo of prestamosDelUsuario; track prestamo.id) {
+                    <li>{{ prestamo.libro.titulo }} — desde {{ prestamo.fechaPrestamo }}</li>
+                  }
+                </ul>
+              }
+            </td></tr>
+          }
         } }
       </tbody>
     </table>
@@ -25,7 +48,7 @@
       <div class="col-12 col-md-6"><label class="form-label" for="usuario-nombre">Nombre</label><input id="usuario-nombre" name="nombre" class="form-control" type="text" maxlength="120" required [(ngModel)]="formulario.nombre"></div>
       <div class="col-12 col-md-6"><label class="form-label" for="usuario-username">Username</label><input id="usuario-username" name="username" class="form-control" type="text" maxlength="50" required [(ngModel)]="formulario.username"></div>
       <div class="col-12 col-md-6"><label class="form-label" for="usuario-email">Email</label><input id="usuario-email" name="email" class="form-control" type="email" maxlength="150" required [(ngModel)]="formulario.email"></div>
-      <div class="col-12 col-md-6"><label class="form-label" for="usuario-password">Valor de passwordHash</label><input id="usuario-password" name="passwordHash" class="form-control" type="password" maxlength="255" required [(ngModel)]="formulario.passwordHash"><div class="form-text">El backend actual guarda este valor tal cual, sin cifrar ni aplicar hash. No ingreses contraseñas reales.</div></div>
+      <div class="col-12 col-md-6"><label class="form-label" for="usuario-password">Contraseña</label><input id="usuario-password" name="passwordHash" class="form-control" type="password" maxlength="255" [required]="actualId === null" autocomplete="new-password" [(ngModel)]="formulario.passwordHash"><div class="form-text">@if (actualId === null) {El backend almacena la contraseña de forma segura.} @else {Déjala vacía para conservar la contraseña actual.}</div></div>
       <div class="col-12 col-md-6"><label class="form-label" for="usuario-rol">Rol</label><select id="usuario-rol" name="rol" class="form-select" required [(ngModel)]="formulario.rol"><option value="BIBLIOTECARIO">BIBLIOTECARIO</option><option value="LECTOR">LECTOR</option></select></div>
       <div class="col-12 col-md-6"><label class="form-label" for="usuario-estado">Estado</label><select id="usuario-estado" name="estado" class="form-select" required [(ngModel)]="formulario.estado"><option value="ACTIVO">ACTIVO</option><option value="INACTIVO">INACTIVO</option></select></div>
       <div class="col-12 d-flex justify-content-end gap-2">

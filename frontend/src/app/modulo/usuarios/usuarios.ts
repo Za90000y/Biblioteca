@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BibliotecaApi, Usuario, UsuarioRequest, mensajeErrorApi } from '../../core/biblioteca-api.service';
+import { BibliotecaApi, Prestamo, Usuario, UsuarioRequest, mensajeErrorApi } from '../../core/biblioteca-api.service';
 
 @Component({
   imports: [FormsModule],
@@ -12,6 +12,9 @@ export class Usuarios implements OnInit {
   private readonly api = inject(BibliotecaApi);
   private readonly changeDetector = inject(ChangeDetectorRef);
   usuarios: Usuario[] = [];
+  usuarioPrestamosId: number | null = null;
+  prestamosDelUsuario: Prestamo[] = [];
+  cargandoPrestamos = false;
   actualId: number | null = null;
   cargando = true;
   guardando = false;
@@ -26,15 +29,40 @@ export class Usuarios implements OnInit {
     this.cargando = true;
     this.error = '';
     this.api.obtenerUsuarios().subscribe({
-      next: (usuarios) => { this.usuarios = usuarios; this.cargando = false; this.changeDetector.markForCheck(); },
+      next: (usuarios) => { this.usuarios = usuarios.filter((usuario) => usuario.rol === 'LECTOR'); this.cargando = false; this.changeDetector.markForCheck(); },
       error: (error: unknown) => { this.error = mensajeErrorApi(error); this.cargando = false; this.changeDetector.markForCheck(); },
+    });
+  }
+
+  mostrarPrestamos(usuario: Usuario): void {
+    if (this.usuarioPrestamosId === usuario.id) {
+      this.usuarioPrestamosId = null;
+      return;
+    }
+    this.usuarioPrestamosId = usuario.id;
+    this.cargandoPrestamos = true;
+    this.prestamosDelUsuario = [];
+    this.api.obtenerPrestamosDelUsuario(usuario.id).subscribe({
+      next: (prestamos) => {
+        this.prestamosDelUsuario = prestamos;
+        this.cargandoPrestamos = false;
+        this.changeDetector.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.error = mensajeErrorApi(error);
+        this.cargandoPrestamos = false;
+        this.changeDetector.markForCheck();
+      },
     });
   }
 
   guardar(): void {
     this.guardando = true;
     this.error = '';
-    const request = { ...this.formulario };
+    const request = {
+      ...this.formulario,
+      passwordHash: this.formulario.passwordHash?.trim() || undefined,
+    };
     const operacion = this.actualId === null
       ? this.api.crearUsuario(request)
       : this.api.actualizarUsuario(this.actualId, request);

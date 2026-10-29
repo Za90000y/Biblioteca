@@ -24,7 +24,6 @@ public class UsuarioRequest {
     @Size(max = 150)
     private String email;
 
-    @NotBlank
     @Size(max = 255)
     private String passwordHash;
 

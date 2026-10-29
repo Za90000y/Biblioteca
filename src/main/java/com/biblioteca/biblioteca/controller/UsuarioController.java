@@ -1,7 +1,9 @@
 package com.biblioteca.biblioteca.controller;
 
 import com.biblioteca.biblioteca.dto.UsuarioRequest;
+import com.biblioteca.biblioteca.entidad.Prestamo;
 import com.biblioteca.biblioteca.entidad.Usuario;
+import com.biblioteca.biblioteca.service.PrestamoService;
 import com.biblioteca.biblioteca.service.UsuarioService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final PrestamoService prestamoService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, PrestamoService prestamoService) {
         this.usuarioService = usuarioService;
+        this.prestamoService = prestamoService;
     }
 
     @GetMapping
@@ -38,8 +42,18 @@ public class UsuarioController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/prestamos")
+    public ResponseEntity<List<Prestamo>> obtenerPrestamosActivos(@PathVariable Long id) {
+        return usuarioService.obtenerPorId(id)
+                .map(usuario -> ResponseEntity.ok(prestamoService.obtenerActivosDelLector(id)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<Usuario> crear(@Valid @RequestBody UsuarioRequest request) {
+        if (request.getPasswordHash() == null || request.getPasswordHash().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.guardar(request));
     }
 

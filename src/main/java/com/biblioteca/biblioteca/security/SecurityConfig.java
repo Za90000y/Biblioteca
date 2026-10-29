@@ -2,6 +2,7 @@ package com.biblioteca.biblioteca.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +25,21 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/autores", "/api/v1/autores/**",
+                                "/api/v1/libros", "/api/v1/libros/**")
+                        .hasAnyRole("BIBLIOTECARIO", "LECTOR")
+                        .requestMatchers("/api/v1/libros", "/api/v1/libros/**",
+                                "/api/v1/autores", "/api/v1/autores/**",
+                                "/api/v1/usuarios", "/api/v1/usuarios/**")
+                        .hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/prestamos/solicitar")
+                        .hasRole("LECTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/prestamos/mios")
+                        .hasRole("LECTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/prestamos/*/devolver")
+                        .hasRole("LECTOR")
+                        .requestMatchers("/api/v1/prestamos", "/api/v1/prestamos/**")
+                        .hasRole("BIBLIOTECARIO")
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService),
                         UsernamePasswordAuthenticationFilter.class)

@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/auth.service';
 import { BibliotecaApi, Libro, Pagina, Prestamo, PrestamoRequest, Usuario, mensajeErrorApi } from '../../core/biblioteca-api.service';
 
 @Component({
@@ -9,8 +10,10 @@ import { BibliotecaApi, Libro, Pagina, Prestamo, PrestamoRequest, Usuario, mensa
   templateUrl: './prestamos.html',
 })
 export class Prestamos implements OnInit {
+  private readonly auth = inject(AuthService);
   private readonly api = inject(BibliotecaApi);
   private readonly changeDetector = inject(ChangeDetectorRef);
+  readonly esBibliotecario = this.auth.rol === 'BIBLIOTECARIO';
   libros: Libro[] = [];
   usuarios: Usuario[] = [];
   prestamos: Prestamo[] = [];
@@ -24,8 +27,39 @@ export class Prestamos implements OnInit {
   formulario: PrestamoRequest = this.formularioVacio();
 
   ngOnInit(): void {
-    this.cargarReferencias();
-    this.cargar();
+    if (this.esBibliotecario) {
+      this.cargarReferencias();
+      this.cargar();
+    } else {
+      this.cargarMisPrestamos();
+      this.api.prestamosCambiaron$.subscribe(() => this.cargarMisPrestamos());
+    }
+  }
+
+  cargarMisPrestamos(): void {
+    this.cargando = true;
+    this.api.obtenerMisPrestamos().subscribe({
+      next: (prestamos) => {
+        this.prestamos = prestamos;
+        this.cargando = false;
+        this.changeDetector.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.error = mensajeErrorApi(error);
+        this.cargando = false;
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  devolver(prestamo: Prestamo): void {
+    this.api.devolverPrestamo(prestamo.id).subscribe({
+      next: () => this.api.notificarPrestamosActualizados(),
+      error: (error: unknown) => {
+        this.error = mensajeErrorApi(error);
+        this.changeDetector.markForCheck();
+      },
+    });
   }
 
   cargarReferencias(): void {

@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export interface Autor {
   id: number;
@@ -62,7 +62,7 @@ export interface UsuarioRequest {
   nombre: string;
   username: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   rol: Usuario['rol'];
   estado: Usuario['estado'];
 }
@@ -79,6 +79,13 @@ export interface PrestamoRequest {
 export class BibliotecaApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = '/api/v1';
+  private readonly prestamosCambiaron = new Subject<void>();
+
+  readonly prestamosCambiaron$ = this.prestamosCambiaron.asObservable();
+
+  notificarPrestamosActualizados(): void {
+    this.prestamosCambiaron.next();
+  }
 
   obtenerAutores(): Observable<Autor[]> {
     return this.http.get<Autor[]>(`${this.baseUrl}/autores`);
@@ -140,6 +147,22 @@ export class BibliotecaApi {
     return this.http.post<Prestamo>(`${this.baseUrl}/prestamos`, request);
   }
 
+  solicitarPrestamo(libroId: number): Observable<Prestamo> {
+    return this.http.post<Prestamo>(`${this.baseUrl}/prestamos/solicitar`, { libroId });
+  }
+
+  obtenerMisPrestamos(): Observable<Prestamo[]> {
+    return this.http.get<Prestamo[]>(`${this.baseUrl}/prestamos/mios`);
+  }
+
+  devolverPrestamo(id: number): Observable<Prestamo> {
+    return this.http.patch<Prestamo>(`${this.baseUrl}/prestamos/${id}/devolver`, {});
+  }
+
+  obtenerPrestamosDelUsuario(usuarioId: number): Observable<Prestamo[]> {
+    return this.http.get<Prestamo[]>(`${this.baseUrl}/usuarios/${usuarioId}/prestamos`);
+  }
+
   actualizarPrestamo(id: number, request: PrestamoRequest): Observable<Prestamo> {
     return this.http.put<Prestamo>(`${this.baseUrl}/prestamos/${id}`, request);
   }
@@ -161,6 +184,12 @@ export function mensajeErrorApi(error: unknown): string {
   }
   if (error.status === 400) {
     return 'El backend rechazó los datos. Revisa los campos e inténtalo de nuevo.';
+  }
+  if (error.status === 401) {
+    return 'Tu sesión venció o no tienes autorización. Inicia sesión de nuevo.';
+  }
+  if (error.status === 403) {
+    return 'Tu rol no tiene permiso para realizar esta acción.';
   }
   return `El backend respondió con el error ${error.status}.`;
 }

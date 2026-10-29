@@ -1,15 +1,22 @@
 package com.biblioteca.biblioteca.repository;
 
 import com.biblioteca.biblioteca.entidad.Libro;
+import jakarta.persistence.LockModeType;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface LibroRepository extends JpaRepository<Libro, Long> {
 
     boolean existsByAutor_Id(Long autorId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select l from Libro l where l.id = :id")
+    Optional<Libro> findByIdForUpdate(@Param("id") Long id);
 
     @Query("select l from Libro l join l.autor a "
             + "where (:titulo is null or lower(l.titulo) like lower(concat('%', :titulo, '%'))) "

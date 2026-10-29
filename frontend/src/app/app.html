@@ -3,6 +3,10 @@
     <div class="spinner-border text-success" aria-hidden="true"></div>
     <p class="mt-3 mb-0">Conectando con el backend de la biblioteca...</p>
   </main>
+} @else if (requiereLogin) {
+  <main class="container py-5">
+    <app-login (loginExitoso)="comprobarBackend()" />
+  </main>
 } @else if (!conectado) {
   <main class="container py-5" role="alert">
     <section class="admin-form mx-auto" style="max-width: 38rem">
@@ -17,12 +21,19 @@
   </main>
 } @else {
   <app-header />
-  <app-nav />
+  <app-nav [bibliotecario]="esBibliotecario" />
+  <div class="container d-flex justify-content-end py-2">
+    <button class="btn btn-outline-library btn-sm" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
   <main class="page-shell">
     <section class="page-view" id="inicio"><app-principal /></section>
-    <section class="page-view" id="autores"><div class="container py-5"><app-autores /></div></section>
+    @if (esBibliotecario) {
+      <section class="page-view" id="autores"><div class="container py-5"><app-autores /></div></section>
+    }
     <section class="page-view" id="libros"><div class="container py-5"><app-libros /></div></section>
-    <section class="page-view" id="usuarios"><div class="container py-5"><app-usuarios /></div></section>
+    @if (esBibliotecario) {
+      <section class="page-view" id="usuarios"><div class="container py-5"><app-usuarios /></div></section>
+    }
     <section class="page-view" id="prestamos"><div class="container py-5"><app-prestamos /></div></section>
   </main>
   <app-footer />

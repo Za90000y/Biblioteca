@@ -1,9 +1,11 @@
 package com.biblioteca.biblioteca.controller;
 
 import com.biblioteca.biblioteca.dto.PrestamoRequest;
+import com.biblioteca.biblioteca.dto.SolicitudPrestamoRequest;
 import com.biblioteca.biblioteca.entidad.Prestamo;
 import com.biblioteca.biblioteca.service.PrestamoService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,12 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/v1/prestamos")
@@ -28,6 +32,30 @@ public class PrestamoController {
 
     public PrestamoController(PrestamoService prestamoService) {
         this.prestamoService = prestamoService;
+    }
+
+    @GetMapping("/mios")
+    public List<Prestamo> obtenerMisPrestamos(Authentication authentication) {
+        return prestamoService.obtenerActivosDelUsuario(authentication.getName());
+    }
+
+    @PostMapping("/solicitar")
+    public ResponseEntity<Prestamo> solicitar(@Valid @RequestBody SolicitudPrestamoRequest request,
+            Authentication authentication) {
+        try {
+            return prestamoService.solicitar(request.libroId(), authentication.getName())
+                    .map(prestamo -> ResponseEntity.status(HttpStatus.CREATED).body(prestamo))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (IllegalStateException exception) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PatchMapping("/{id}/devolver")
+    public ResponseEntity<Prestamo> devolver(@PathVariable Long id, Authentication authentication) {
+        return prestamoService.devolver(id, authentication.getName())
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping

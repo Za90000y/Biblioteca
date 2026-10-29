@@ -1,6 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Autor, BibliotecaApi, Libro, LibroRequest, Pagina, mensajeErrorApi } from '../../core/biblioteca-api.service';
+import { AuthService } from '../../core/auth.service';
+import { Autor, BibliotecaApi, Libro, LibroRequest, Pagina, Prestamo, mensajeErrorApi } from '../../core/biblioteca-api.service';
 
 @Component({
   imports: [FormsModule],
@@ -9,10 +11,13 @@ import { Autor, BibliotecaApi, Libro, LibroRequest, Pagina, mensajeErrorApi } fr
   templateUrl: './libros.html',
 })
 export class Libros implements OnInit {
+  private readonly auth = inject(AuthService);
   private readonly api = inject(BibliotecaApi);
   private readonly changeDetector = inject(ChangeDetectorRef);
+  readonly esBibliotecario = this.auth.rol === 'BIBLIOTECARIO';
   autores: Autor[] = [];
   libros: Libro[] = [];
+  prestamosActivos: Prestamo[] = [];
   paginaActual = 0;
   totalPaginas = 0;
   filtro = '';
@@ -20,11 +25,56 @@ export class Libros implements OnInit {
   cargando = true;
   guardando = false;
   error = '';
+  mensajeSolicitud = '';
+  solicitandoLibroId: number | null = null;
   formulario: LibroRequest = this.formularioVacio();
 
   ngOnInit(): void {
-    this.cargarAutores();
+    if (this.esBibliotecario) {
+      this.cargarAutores();
+    } else {
+      this.cargarPrestamosActivos();
+      this.api.prestamosCambiaron$.subscribe(() => this.cargarPrestamosActivos());
+    }
     this.cargar();
+  }
+
+  cargarPrestamosActivos(): void {
+    this.api.obtenerMisPrestamos().subscribe({
+      next: (prestamos) => {
+        this.prestamosActivos = prestamos;
+        this.changeDetector.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.error = mensajeErrorApi(error);
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  solicitar(libro: Libro): void {
+    this.solicitandoLibroId = libro.id;
+    this.mensajeSolicitud = '';
+    this.api.solicitarPrestamo(libro.id).subscribe({
+      next: (prestamo) => {
+        this.prestamosActivos = [...this.prestamosActivos, prestamo];
+        this.solicitandoLibroId = null;
+        this.mensajeSolicitud = `Solicitaste “${libro.titulo}”.`;
+        this.api.notificarPrestamosActualizados();
+        this.changeDetector.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.solicitandoLibroId = null;
+        this.mensajeSolicitud = error instanceof HttpErrorResponse && error.status === 409
+          ? 'No se pudo solicitar: el libro no está disponible o ya alcanzaste el límite de tres préstamos.'
+          : mensajeErrorApi(error);
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  yaLoTengo(libroId: number): boolean {
+    return this.prestamosActivos.some((prestamo) => prestamo.libro.id === libroId);
   }
 
   cargar(): void {

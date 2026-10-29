@@ -39,6 +39,6 @@ Angular reenvía `/api` al backend mediante `frontend/proxy.conf.json`. La inter
 Authorization: Bearer TOKEN
 ```
 
-Todos los demás endpoints `/api/v1/**` requieren un token válido. El backend guarda las contraseñas nuevas con BCrypt; si encuentra una contraseña previa en texto plano, la convierte a BCrypt después de un inicio de sesión exitoso.
+Todos los demás endpoints `/api/v1/**` requieren un token válido. El rol `LECTOR` puede consultar libros, solicitar préstamos y devolver sus propios libros, con un máximo de tres préstamos activos. El rol `BIBLIOTECARIO` administra el catálogo y consulta lectores y sus préstamos activos. El backend guarda las contraseñas nuevas con BCrypt; si encuentra una contraseña previa en texto plano, la convierte a BCrypt después de un inicio de sesión exitoso.
 
-La interfaz Angular todavía no implementa el formulario de login ni adjunta el token a sus solicitudes; por eso, sus llamadas a la API protegida recibirán `401` hasta integrar ese flujo en el frontend.
+Angular muestra el formulario de login antes de abrir la biblioteca y adjunta el token a las solicitudes protegidas. La sesión se conserva en `sessionStorage` hasta cerrar sesión o recibir un token inválido.

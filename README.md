@@ -32,6 +32,8 @@ $env:JWT_SECRET = openssl rand -base64 32
 $env:DB_PASSWORD = "tu-clave-local"
 ```
 
+Las acciones `run` y `debug` de NetBeans usan una clave JWT fija solo para desarrollo local. No reutilices esa clave fuera de tu entorno local; en producción configura `JWT_SECRET` como variable de entorno.
+
 ## Ejecutar
 
 Abre el `pom.xml` de la raíz como proyecto Maven en NetBeans; `backend` aparecerá como módulo con sus fuentes. También puedes abrir `backend/pom.xml` directamente. Para ejecutar desde la raíz:

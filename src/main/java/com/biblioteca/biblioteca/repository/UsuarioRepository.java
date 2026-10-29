@@ -11,6 +11,10 @@ import org.springframework.data.repository.query.Param;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByUsername(String username);
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from Usuario u where u.username = :username")
     Optional<Usuario> findByUsernameForUpdate(@Param("username") String username);

@@ -2,8 +2,10 @@ package com.biblioteca.biblioteca.controller;
 
 import com.biblioteca.biblioteca.dto.AuthResponse;
 import com.biblioteca.biblioteca.dto.LoginRequest;
+import com.biblioteca.biblioteca.dto.RegistroRequest;
 import com.biblioteca.biblioteca.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +28,16 @@ public class AuthController {
         return authService.iniciarSesion(request)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    @PostMapping("/registro")
+    public ResponseEntity<AuthResponse> registrar(@Valid @RequestBody RegistroRequest request) {
+        try {
+            return authService.registrar(request)
+                    .map(respuesta -> ResponseEntity.status(HttpStatus.CREATED).body(respuesta))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
+        } catch (DataIntegrityViolationException exception) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 }

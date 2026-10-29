@@ -16,7 +16,11 @@ export class Login {
   @Output() readonly loginExitoso = new EventEmitter<void>();
 
   username = '';
+  nombre = '';
+  email = '';
   password = '';
+  confirmarPassword = '';
+  modoRegistro = false;
   error = '';
   ingresando = false;
 
@@ -40,9 +44,53 @@ export class Login {
     });
   }
 
+  registrar(): void {
+    this.error = '';
+    if (this.password !== this.confirmarPassword) {
+      this.error = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    this.ingresando = true;
+    this.auth.registrar({
+      nombre: this.nombre.trim(),
+      email: this.email.trim(),
+      username: this.username.trim(),
+      password: this.password,
+    }).subscribe({
+      next: () => {
+        this.ingresando = false;
+        this.password = '';
+        this.confirmarPassword = '';
+        this.loginExitoso.emit();
+        this.changeDetector.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.error = error instanceof HttpErrorResponse && error.status === 409
+          ? 'Ese usuario o correo ya está registrado.'
+          : mensajeErrorApi(error);
+        this.ingresando = false;
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  mostrarRegistro(): void {
+    this.modoRegistro = true;
+    this.error = '';
+  }
+
+  mostrarLogin(): void {
+    this.modoRegistro = false;
+    this.error = '';
+  }
+
   limpiar(): void {
     this.username = '';
+    this.nombre = '';
+    this.email = '';
     this.password = '';
+    this.confirmarPassword = '';
     this.error = '';
   }
 }

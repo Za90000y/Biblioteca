@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/registro").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/autores", "/api/v1/autores/**",
                                 "/api/v1/libros", "/api/v1/libros/**")
                         .hasAnyRole("BIBLIOTECARIO", "LECTOR")

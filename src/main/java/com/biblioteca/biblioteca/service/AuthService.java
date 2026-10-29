@@ -2,7 +2,9 @@ package com.biblioteca.biblioteca.service;
 
 import com.biblioteca.biblioteca.dto.AuthResponse;
 import com.biblioteca.biblioteca.dto.LoginRequest;
+import com.biblioteca.biblioteca.dto.RegistroRequest;
 import com.biblioteca.biblioteca.entidad.EstadoUsuario;
+import com.biblioteca.biblioteca.entidad.Rol;
 import com.biblioteca.biblioteca.entidad.Usuario;
 import com.biblioteca.biblioteca.repository.UsuarioRepository;
 import com.biblioteca.biblioteca.security.JwtService;
@@ -35,11 +37,30 @@ public class AuthService {
                 .filter(usuario -> usuario.getEstado() == EstadoUsuario.ACTIVO)
                 .filter(usuario -> validarPassword(usuario, request.password()));
 
-        return resultado.map(usuario -> {
-            String token = jwtService.generarToken(usuario);
-            return new AuthResponse(token, "Bearer", jwtService.obtenerDuracionMs() / 1000,
-                    usuario.getId(), usuario.getUsername(), usuario.getNombre(), usuario.getRol());
-        });
+        return resultado.map(this::crearRespuesta);
+    }
+
+    public Optional<AuthResponse> registrar(RegistroRequest request) {
+        String username = request.username().trim();
+        String email = request.email().trim();
+        if (usuarioRepository.existsByUsername(username) || usuarioRepository.existsByEmail(email)) {
+            return Optional.empty();
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.nombre().trim());
+        usuario.setUsername(username);
+        usuario.setEmail(email);
+        usuario.setPasswordHash(passwordEncoder.encode(request.password()));
+        usuario.setRol(Rol.LECTOR);
+        usuario.setEstado(EstadoUsuario.ACTIVO);
+        return Optional.of(crearRespuesta(usuarioRepository.save(usuario)));
+    }
+
+    private AuthResponse crearRespuesta(Usuario usuario) {
+        String token = jwtService.generarToken(usuario);
+        return new AuthResponse(token, "Bearer", jwtService.obtenerDuracionMs() / 1000,
+                usuario.getId(), usuario.getUsername(), usuario.getNombre(), usuario.getRol());
     }
 
     private boolean validarPassword(Usuario usuario, String password) {

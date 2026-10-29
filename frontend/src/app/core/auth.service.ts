@@ -7,6 +7,11 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegistroRequest extends LoginRequest {
+  nombre: string;
+  email: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   tokenType: string;
@@ -31,10 +36,13 @@ export class AuthService {
 
   iniciarSesion(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, request).pipe(
-      tap((response) => {
-        sessionStorage.setItem(TOKEN_KEY, response.accessToken);
-        sessionStorage.setItem(ROLE_KEY, response.rol);
-      }),
+      tap((response) => this.guardarSesion(response)),
+    );
+  }
+
+  registrar(request: RegistroRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/registro`, request).pipe(
+      tap((response) => this.guardarSesion(response)),
     );
   }
 
@@ -52,5 +60,10 @@ export class AuthService {
   get rol(): AuthResponse['rol'] | null {
     const rol = typeof sessionStorage === 'undefined' ? null : sessionStorage.getItem(ROLE_KEY);
     return rol === 'BIBLIOTECARIO' || rol === 'LECTOR' ? rol : null;
+  }
+
+  private guardarSesion(response: AuthResponse): void {
+    sessionStorage.setItem(TOKEN_KEY, response.accessToken);
+    sessionStorage.setItem(ROLE_KEY, response.rol);
   }
 }

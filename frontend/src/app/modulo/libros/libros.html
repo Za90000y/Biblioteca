@@ -14,20 +14,21 @@
     </div>
   }
   <div class="row g-3 align-items-center mb-3">
-    <div class="col-12 col-md-6 col-lg-5"><form (ngSubmit)="buscar()"><label class="visually-hidden" for="buscar-libro">Buscar libro por título</label><div class="input-group"><input id="buscar-libro" name="filtro" class="form-control" type="search" [(ngModel)]="filtro" placeholder="Buscar por título"><button class="btn btn-outline-library" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button></div></form></div>
+    <form class="col-12 col-md-8 col-lg-7" (ngSubmit)="buscar()"><div class="row g-2"><div class="col-12 col-md-5"><label class="visually-hidden" for="buscar-libro">Buscar libro por título</label><input id="buscar-libro" name="filtro" class="form-control" type="search" [(ngModel)]="filtro" placeholder="Buscar por título"></div><div class="col-12 col-md-5"><label class="visually-hidden" for="buscar-autor">Buscar por autor</label><input id="buscar-autor" name="filtroAutor" class="form-control" type="search" [(ngModel)]="filtroAutor" placeholder="Buscar por autor"></div><div class="col-auto"><button class="btn btn-outline-library" type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button></div></div></form>
     <div class="col-md-auto ms-md-auto text-secondary small">{{ libros.length }} en esta página</div>
   </div>
 
   <div class="table-responsive border rounded mb-3">
     <table class="table admin-table align-middle mb-0">
-      <thead><tr><th>ID</th><th>Título</th><th>ISBN</th><th>Año</th><th>Autor</th><th>{{ esBibliotecario ? 'Acciones' : 'Préstamo' }}</th></tr></thead>
+      <thead><tr><th>ID</th><th>Título</th><th>ISBN</th><th>Año</th><th>Autor</th><th>Detalle</th><th>{{ esBibliotecario ? 'Acciones' : 'Préstamo' }}</th></tr></thead>
       <tbody>
-        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="6">Consultando catálogo...</td></tr> }
-        @else if (libros.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="6">El backend no tiene libros para mostrar.</td></tr> }
+        @if (cargando) { <tr><td class="py-4 text-center text-secondary" colspan="7">Consultando catálogo...</td></tr> }
+        @else if (libros.length === 0) { <tr><td class="py-4 text-center text-secondary" colspan="7">El backend no tiene libros para mostrar.</td></tr> }
         @else { @for (libro of libros; track libro.id) {
           <tr>
             <td>{{ libro.id }}</td><td>{{ libro.titulo }}</td><td>{{ libro.isbn }}</td><td>{{ libro.anio }}</td>
             <td>{{ libro.autor.nombre }} {{ libro.autor.apellido }}</td>
+            <td><button class="btn btn-outline-library btn-sm" type="button" (click)="alternarDetalle(libro)">{{ detalleId === libro.id ? 'Ocultar' : 'Ver detalle' }}</button></td>
             <td>
               @if (esBibliotecario) {
                 <div class="action-buttons">
@@ -45,6 +46,9 @@
               }
             </td>
           </tr>
+          @if (detalleId === libro.id) {
+            <tr><td colspan="7"><strong>{{ libro.titulo }}</strong><div>ISBN {{ libro.isbn }} · {{ libro.anio }}</div><div>Autor: {{ libro.autor.nombre }} {{ libro.autor.apellido }}</div><div>{{ libro.autor.nacionalidad }} · Nacimiento: {{ libro.autor.fechaNacimiento }}</div></td></tr>
+          }
         } }
       </tbody>
     </table>

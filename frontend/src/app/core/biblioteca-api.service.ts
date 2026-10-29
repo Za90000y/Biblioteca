@@ -103,9 +103,10 @@ export class BibliotecaApi {
     return this.http.delete<void>(`${this.baseUrl}/autores/${id}`);
   }
 
-  obtenerLibros(page = 0, size = 10, titulo = ''): Observable<Pagina<Libro>> {
+  obtenerLibros(page = 0, size = 10, titulo = '', autor = ''): Observable<Pagina<Libro>> {
     let params = new HttpParams().set('page', page).set('size', size);
     if (titulo.trim()) params = params.set('titulo', titulo.trim());
+    if (autor.trim()) params = params.set('autor', autor.trim());
     return this.http.get<Pagina<Libro>>(`${this.baseUrl}/libros`, { params });
   }
 

@@ -21,6 +21,8 @@ export class Libros implements OnInit {
   paginaActual = 0;
   totalPaginas = 0;
   filtro = '';
+  filtroAutor = '';
+  detalleId: number | null = null;
   actualId: number | null = null;
   cargando = true;
   guardando = false;
@@ -80,7 +82,7 @@ export class Libros implements OnInit {
   cargar(): void {
     this.cargando = true;
     this.error = '';
-    this.api.obtenerLibros(this.paginaActual, 10, this.filtro).subscribe({
+    this.api.obtenerLibros(this.paginaActual, 10, this.filtro, this.filtroAutor).subscribe({
       next: (pagina: Pagina<Libro>) => {
         this.libros = pagina.content;
         this.totalPaginas = pagina.totalPages;
@@ -106,6 +108,10 @@ export class Libros implements OnInit {
   cambiarPagina(pagina: number): void {
     this.paginaActual = pagina;
     this.cargar();
+  }
+
+  alternarDetalle(libro: Libro): void {
+    this.detalleId = this.detalleId === libro.id ? null : libro.id;
   }
 
   guardar(): void {

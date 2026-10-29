@@ -44,7 +44,7 @@ export class App implements OnInit {
     this.comprobando = true;
     this.requiereLogin = false;
     this.error = '';
-    this.api.obtenerAutores().subscribe({
+    this.api.obtenerLibros(0, 1).subscribe({
       next: () => {
         this.conectado = true;
         this.comprobando = false;

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { API_BASE_URL } from './api-config';
 
 export interface LoginRequest {
   username: string;
@@ -32,16 +33,15 @@ export function obtenerTokenGuardado(): string | null {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1/auth';
 
   iniciarSesion(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, request).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/login`, request).pipe(
       tap((response) => this.guardarSesion(response)),
     );
   }
 
   registrar(request: RegistroRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/registro`, request).pipe(
+    return this.http.post<AuthResponse>(`${API_BASE_URL}/auth/registro`, request).pipe(
       tap((response) => this.guardarSesion(response)),
     );
   }

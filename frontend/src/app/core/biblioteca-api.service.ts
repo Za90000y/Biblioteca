@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { API_BASE_URL } from './api-config';
 
 export interface Autor {
   id: number;
@@ -78,7 +79,7 @@ export interface PrestamoRequest {
 @Injectable({ providedIn: 'root' })
 export class BibliotecaApi {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1';
+  private readonly baseUrl = API_BASE_URL;
   private readonly prestamosCambiaron = new Subject<void>();
 
   readonly prestamosCambiaron$ = this.prestamosCambiaron.asObservable();

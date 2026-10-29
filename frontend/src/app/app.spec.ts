@@ -7,6 +7,7 @@ import { App } from './app';
 describe('App', () => {
   beforeEach(async () => {
     sessionStorage.removeItem('biblioteca.accessToken');
+    sessionStorage.removeItem('biblioteca.rol');
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()],
@@ -29,7 +30,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectNone('/api/v1/autores');
+    http.expectNone((request) => request.url.startsWith('/api/v1/'));
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('app-login')).not.toBeNull();
   });
@@ -40,9 +41,15 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    const request = http.expectOne('/api/v1/autores');
+    const request = http.expectOne('/api/v1/libros?page=0&size=1');
     expect(request.request.headers.get('Authorization')).toBe('Bearer test-token');
-    request.flush([]);
+    request.flush({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      number: 0,
+      size: 1,
+    });
     await fixture.whenStable();
     responderSolicitudesBiblioteca(http);
     await fixture.whenStable();
@@ -58,7 +65,13 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne('/api/v1/autores').flush([]);
+    http.expectOne('/api/v1/libros?page=0&size=1').flush({
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      number: 0,
+      size: 1,
+    });
     await fixture.whenStable();
     fixture.detectChanges();
 
@@ -76,7 +89,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne('/api/v1/autores').flush(null, {
+    http.expectOne('/api/v1/libros?page=0&size=1').flush(null, {
       status: 401,
       statusText: 'Unauthorized',
     });
@@ -93,7 +106,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne('/api/v1/autores').flush('unavailable', {
+    http.expectOne('/api/v1/libros?page=0&size=1').flush('unavailable', {
       status: 503,
       statusText: 'Service Unavailable',
     });
@@ -106,8 +119,7 @@ describe('App', () => {
 
 function responderSolicitudesBiblioteca(http: HttpTestingController): void {
   for (const request of http.match(() => true)) {
-    const esPagina = request.request.url === '/api/v1/libros'
-      || request.request.url === '/api/v1/prestamos';
+    const esPagina = request.request.urlWithParams.includes('page=');
     request.flush(esPagina
       ? { content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 }
       : []);

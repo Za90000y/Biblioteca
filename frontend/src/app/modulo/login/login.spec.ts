@@ -55,4 +55,37 @@ describe('Login', () => {
     expect(component.password).toBe('');
     http.verify();
   });
+
+  it('registers a reader and stores the returned session', () => {
+    const http = TestBed.inject(HttpTestingController);
+    component.nombre = ' Lector ';
+    component.email = ' lector@example.com ';
+    component.username = ' lector ';
+    component.password = 'secreto123';
+    component.confirmarPassword = 'secreto123';
+
+    component.registrar();
+
+    const request = http.expectOne('/api/v1/auth/registro');
+    expect(request.request.body).toEqual({
+      nombre: 'Lector',
+      email: 'lector@example.com',
+      username: 'lector',
+      password: 'secreto123',
+    });
+    expect(request.request.headers.has('Authorization')).toBe(false);
+    request.flush({
+      accessToken: 'reader-token',
+      tokenType: 'Bearer',
+      expiresIn: 3600,
+      userId: 2,
+      username: 'lector',
+      nombre: 'Lector',
+      rol: 'LECTOR',
+    });
+
+    expect(sessionStorage.getItem('biblioteca.accessToken')).toBe('reader-token');
+    expect(sessionStorage.getItem('biblioteca.rol')).toBe('LECTOR');
+    http.verify();
+  });
 });

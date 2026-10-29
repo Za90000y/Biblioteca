@@ -1,44 +1,60 @@
 # Biblioteca
 
-Aplicación de biblioteca con backend Spring Boot y frontend Angular.
+Proyecto dividido en dos aplicaciones independientes:
+
+- `frontend/`: Angular. Solo consume la API HTTP; no se conecta a MySQL.
+- `backend/`: Spring Boot. Expone la API y es el único componente que accede a MySQL.
+- `database/schema.sql`: esquema de la base de datos.
+
+El contrato entre aplicaciones es la API versionada en `/api/v1`. La configuración de Angular está en `frontend/src/environments/`; el backend puede cambiar de dirección sin modificar los servicios de la interfaz. Para apuntar la interfaz a otro backend, cambia `apiBaseUrl` en el entorno de Angular correspondiente. En producción, configura también `APP_CORS_ALLOWED_ORIGINS` en el backend. Para desarrollo, `/api/v1` usa el proxy de `frontend/proxy.conf.json`.
 
 ## Requisitos
 
 - Java 17 y Maven
 - Node.js y npm
-- MySQL con la base de datos `biblioteca`
+- MySQL
 
-## Ejecución
+## Base de datos y configuración
 
-1. Inicia MySQL y verifica la conexión configurada en `src/main/resources/application.properties`.
-2. Configura `JWT_SECRET` con una clave aleatoria codificada en Base64 de al menos 32 bytes. Por ejemplo, con OpenSSL:
+1. Ejecuta `database/schema.sql` en MySQL.
+2. Configura el backend mediante variables de entorno:
+   - `DB_URL` (opcional; por defecto `jdbc:mysql://localhost:3306/biblioteca`)
+   - `DB_USERNAME` (opcional; por defecto `root`)
+   - `DB_PASSWORD`
+   - `JWT_SECRET`: clave aleatoria codificada en Base64, de al menos 32 bytes.
+   - `JWT_EXPIRATION_MS` (opcional; por defecto una hora).
+   - `APP_CORS_ALLOWED_ORIGINS` (opcional; por defecto `http://localhost:4200`; admite varios orígenes separados por comas).
 
-	```powershell
-	$env:JWT_SECRET = openssl rand -base64 32
-	```
+Por ejemplo, en PowerShell:
 
-	El token dura una hora por defecto; puedes cambiarlo con `JWT_EXPIRATION_MS` (milisegundos).
-3. Inicia el backend Spring Boot desde NetBeans o con `mvn spring-boot:run`. La API debe quedar disponible en `http://localhost:8080`.
-4. En otra terminal, ejecuta:
-
-	```powershell
-	cd frontend
-	npm.cmd ci
-	npm.cmd start
-	```
-
-5. Abre `http://localhost:4200`.
-
-Angular reenvía `/api` al backend mediante `frontend/proxy.conf.json`. La interfaz consulta la API al iniciar y permanece bloqueada si Spring Boot no responde o si la API rechaza las solicitudes; no usa datos de demostración ni almacenamiento local.
-
-## Autenticación de API
-
-`POST /api/v1/auth/login` es público y recibe `{"username":"...","password":"..."}`. Devuelve un `accessToken` JWT junto con el tipo, vencimiento e información básica del usuario. Envía el token en las demás solicitudes:
-
-```http
-Authorization: Bearer TOKEN
+```powershell
+$env:JWT_SECRET = openssl rand -base64 32
+$env:DB_PASSWORD = "tu-clave-local"
 ```
 
-Todos los demás endpoints `/api/v1/**` requieren un token válido. El rol `LECTOR` puede consultar libros, solicitar préstamos y devolver sus propios libros, con un máximo de tres préstamos activos. El rol `BIBLIOTECARIO` administra el catálogo y consulta lectores y sus préstamos activos. El backend guarda las contraseñas nuevas con BCrypt; si encuentra una contraseña previa en texto plano, la convierte a BCrypt después de un inicio de sesión exitoso.
+## Ejecutar
 
-Angular muestra el formulario de login antes de abrir la biblioteca y adjunta el token a las solicitudes protegidas. La sesión se conserva en `sessionStorage` hasta cerrar sesión o recibir un token inválido.
+Abre `backend/pom.xml` como proyecto Maven en NetBeans, o ejecuta desde la raíz:
+
+```powershell
+mvn -f backend/pom.xml spring-boot:run
+```
+
+En otra terminal, inicia Angular:
+
+```powershell
+cd frontend
+npm.cmd ci
+npm.cmd start
+```
+
+La aplicación queda en `http://localhost:4200`; el proxy de desarrollo reenvía `/api` a `http://localhost:8080`.
+
+## API y roles
+
+`POST /api/v1/auth/registro` permite registrar lectores y `POST /api/v1/auth/login` inicia sesión. Las demás solicitudes requieren el token JWT en el encabezado `Authorization: Bearer TOKEN`.
+
+- `LECTOR`: consulta el catálogo, solicita libros disponibles y devuelve sus préstamos; no puede superar tres préstamos activos.
+- `BIBLIOTECARIO`: gestiona el catálogo y consulta lectores y sus préstamos activos.
+
+Las contraseñas se guardan con BCrypt. El backend también convierte a BCrypt las contraseñas preexistentes en texto plano al iniciar sesión correctamente.

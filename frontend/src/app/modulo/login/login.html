@@ -36,8 +36,8 @@
       } @else {
       <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
         <div class="mb-3">
-          <label class="form-label" for="login-usuario">Usuario</label>
-          <input id="login-usuario" name="username" class="form-control" type="text" autocomplete="username" placeholder="Tu nombre de usuario" required [(ngModel)]="username">
+          <label class="form-label" for="login-email">Correo electrónico</label>
+          <input id="login-email" name="email" class="form-control" type="email" maxlength="150" autocomplete="email" placeholder="tu@correo.com" required [(ngModel)]="email">
         </div>
         <div class="mb-4">
           <label class="form-label" for="login-password">Contraseña</label>

@@ -4,13 +4,13 @@ import { Observable, tap } from 'rxjs';
 import { API_BASE_URL } from './api-config';
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegistroRequest extends LoginRequest {
   nombre: string;
-  email: string;
+  username: string;
 }
 
 export interface AuthResponse {

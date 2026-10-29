@@ -27,7 +27,7 @@ export class Login {
   iniciarSesion(): void {
     this.ingresando = true;
     this.error = '';
-    this.auth.iniciarSesion({ username: this.username.trim(), password: this.password }).subscribe({
+    this.auth.iniciarSesion({ email: this.email.trim(), password: this.password }).subscribe({
       next: () => {
         this.ingresando = false;
         this.password = '';
@@ -36,7 +36,7 @@ export class Login {
       },
       error: (error: unknown) => {
         this.error = error instanceof HttpErrorResponse && error.status === 401
-          ? 'Usuario o contraseña incorrectos.'
+          ? 'Correo o contraseña incorrectos.'
           : mensajeErrorApi(error);
         this.ingresando = false;
         this.changeDetector.markForCheck();

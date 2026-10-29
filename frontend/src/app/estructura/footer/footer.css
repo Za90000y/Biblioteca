@@ -3,7 +3,8 @@
 }
 
 .library-footer {
-  background: #1e404f;
+  border-top: 3px solid var(--library-gold);
+  background: var(--library-ink);
   color: #fff;
 }
 
@@ -29,8 +30,8 @@
   height: 42px;
   place-items: center;
   border-radius: 13px;
-  background: rgba(233, 189, 150, 0.13);
-  color: #e9bd96;
+  background: rgba(196, 154, 75, 0.16);
+  color: #e5c779;
   font-size: 1.25rem;
 }
 
@@ -70,7 +71,7 @@
 }
 
 .footer-links a:hover {
-  color: #e9bd96;
+  color: #e5c779;
 }
 
 @media (max-width: 767.98px) {

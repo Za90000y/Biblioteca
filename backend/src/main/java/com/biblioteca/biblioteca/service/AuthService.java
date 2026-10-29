@@ -33,7 +33,7 @@ public class AuthService {
     }
 
     public Optional<AuthResponse> iniciarSesion(LoginRequest request) {
-        Optional<Usuario> resultado = usuarioRepository.findByUsername(request.username())
+        Optional<Usuario> resultado = usuarioRepository.findByEmailIgnoreCase(request.email().trim())
                 .filter(usuario -> usuario.getEstado() == EstadoUsuario.ACTIVO)
                 .filter(usuario -> validarPassword(usuario, request.password()));
 

@@ -5,7 +5,8 @@
 }
 
 .library-nav {
-  background: #1e404f;
+  border-bottom: 1px solid rgba(196, 154, 75, 0.38);
+  background: var(--library-ink);
 }
 
 .nav-inner {
@@ -44,7 +45,7 @@
 
 .nav-links a:hover,
 .nav-links a:focus-visible {
-  color: #e9bd96;
+  color: #e5c779;
 }
 
 .nav-links .login-link {
@@ -54,7 +55,7 @@
 }
 
 .nav-links .login-link:hover {
-  background: #e6692a;
+  background: var(--library-orange);
   color: #fff;
 }
 

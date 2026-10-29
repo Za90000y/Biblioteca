@@ -18,4 +18,21 @@ describe('Principal', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('shows only books and loans to readers', () => {
+    const headings = fixture.nativeElement.querySelectorAll('h3') as NodeListOf<HTMLHeadingElement>;
+    const titles = Array.from(headings, (heading) => heading.textContent?.trim());
+
+    expect(titles).toEqual(['Libros', 'Préstamos']);
+  });
+
+  it('shows authors and users but not loans to librarians', () => {
+    fixture.componentRef.setInput('bibliotecario', true);
+    fixture.detectChanges();
+
+    const headings = fixture.nativeElement.querySelectorAll('h3') as NodeListOf<HTMLHeadingElement>;
+    const titles = Array.from(headings, (heading) => heading.textContent?.trim());
+
+    expect(titles).toEqual(['Autores', 'Libros', 'Usuarios']);
+  });
 });

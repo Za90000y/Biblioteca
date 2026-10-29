@@ -4,7 +4,7 @@
 
 .welcome-section {
   padding: clamp(2.5rem, 5vw, 4rem) 0;
-  background: #f8f8f8;
+  background: transparent;
 }
 
 .welcome-heading {
@@ -20,7 +20,7 @@
 
 .welcome-heading h2 {
   margin: 0 0 0.7rem;
-  color: #1e404f;
+  color: var(--library-ink);
   font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 600;
 }
@@ -28,7 +28,7 @@
 .welcome-heading p {
   max-width: 650px;
   margin: 0;
-  color: #718089;
+  color: var(--library-muted);
   font-size: 1rem;
   line-height: 1.75;
 }
@@ -39,9 +39,10 @@
   min-height: 205px;
   flex-direction: column;
   padding: 1.25rem;
-  border: 1px solid #e6e9e7;
+  border: 1px solid var(--library-border);
+  border-top: 3px solid var(--library-gold);
   border-radius: 0.75rem;
-  background: #fff;
+  background: var(--library-paper);
 }
 
 .feature-icon {
@@ -55,35 +56,35 @@
 }
 
 .feature-olive {
-  background: rgba(152, 138, 32, 0.12);
-  color: #817515;
+  background: rgba(196, 154, 75, 0.17);
+  color: #826022;
 }
 
 .feature-orange {
-  background: rgba(230, 105, 42, 0.12);
-  color: #d45a20;
+  background: rgba(189, 103, 64, 0.14);
+  color: var(--library-orange);
 }
 
 .feature-green {
-  background: rgba(52, 104, 92, 0.12);
-  color: #34685c;
+  background: rgba(69, 99, 78, 0.14);
+  color: var(--library-green);
 }
 
 .feature-red {
-  background: rgba(204, 33, 50, 0.1);
-  color: #cc2132;
+  background: rgba(145, 77, 89, 0.13);
+  color: var(--library-red);
 }
 
 .feature-card h3 {
   margin: 0 0 0.45rem;
-  color: #1e404f;
+  color: var(--library-ink);
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .feature-card p {
   margin: 0 0 1.1rem;
-  color: #718089;
+  color: var(--library-muted);
   font-size: 0.88rem;
 }
 
@@ -92,20 +93,20 @@
   align-items: center;
   gap: 0.45rem;
   margin-top: auto;
-  color: #34685c;
+  color: var(--library-green);
   font-size: 0.83rem;
   font-weight: 700;
   text-decoration: none;
 }
 
 .feature-link:hover {
-  color: #e6692a;
+  color: var(--library-orange);
 }
 
 .library-image {
   min-height: 150px;
   border-radius: 0.75rem;
-  background: #34685c;
+  background: linear-gradient(115deg, #294a43, #586147 58%, #a46b43);
 }
 
 .library-image-caption {

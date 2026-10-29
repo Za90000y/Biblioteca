@@ -32,13 +32,13 @@ describe('Login', () => {
 
   it('authenticates with the backend and stores the access token', () => {
     const http = TestBed.inject(HttpTestingController);
-    component.username = 'lector';
+    component.email = ' lector@example.com ';
     component.password = 'secreto';
 
     component.iniciarSesion();
 
     const request = http.expectOne('/api/v1/auth/login');
-    expect(request.request.body).toEqual({ username: 'lector', password: 'secreto' });
+    expect(request.request.body).toEqual({ email: 'lector@example.com', password: 'secreto' });
     expect(request.request.headers.has('Authorization')).toBe(false);
     request.flush({
       accessToken: 'jwt-token',

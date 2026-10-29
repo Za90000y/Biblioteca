@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   imports: [],
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   styleUrl: './principal.css',
   templateUrl: './principal.html',
 })
-export class Principal {}
+export class Principal {
+  @Input() bibliotecario = false;
+}

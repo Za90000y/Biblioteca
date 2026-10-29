@@ -26,7 +26,7 @@
     <button class="btn btn-outline-library btn-sm" type="button" (click)="cerrarSesion()">Cerrar sesión</button>
   </div>
   <main class="page-shell">
-    <section class="page-view" id="inicio"><app-principal /></section>
+    <section class="page-view" id="inicio"><app-principal [bibliotecario]="esBibliotecario" /></section>
     @if (esBibliotecario) {
       <section class="page-view" id="autores"><div class="container py-5"><app-autores /></div></section>
     }

@@ -1,8 +1,14 @@
 :root {
-  --library-ink: #1e404f;
-  --library-green: #34685c;
-  --library-orange: #e6692a;
-  --library-red: #cc2132;
+  --library-ink: #2e3448;
+  --library-green: #45634e;
+  --library-orange: #bd6740;
+  --library-red: #914d59;
+  --library-forest: #263f3b;
+  --library-parchment: #f2ead8;
+  --library-paper: #fffaf0;
+  --library-border: #dfd1b8;
+  --library-muted: #6d716c;
+  --library-gold: #c49a4b;
 }
 
 html {
@@ -11,8 +17,9 @@ html {
 
 body {
   margin: 0;
-  background: #f8f8f8;
-  color: #283b42;
+  background-color: var(--library-parchment);
+  background-image: repeating-linear-gradient(0deg, rgba(92, 75, 49, 0.025) 0 1px, transparent 1px 5px);
+  color: var(--library-ink);
   font-family: "DM Sans", sans-serif;
 }
 
@@ -34,14 +41,22 @@ app-usuarios, app-prestamos, app-login, app-footer {
 }
 
 .btn-library:hover {
-  border-color: #ed9530;
-  background: #ed9530;
+  border-color: #d18850;
+  background: #d18850;
   color: white;
 }
 
+.btn-library:disabled,
+.btn-library.disabled {
+  border-color: #b98567;
+  background: #b98567;
+  color: white;
+  opacity: 0.75;
+}
+
 .btn-outline-library {
-  border-color: #cbd5d2;
-  background: white;
+  border-color: var(--library-border);
+  background: var(--library-paper);
   color: var(--library-ink);
 }
 
@@ -54,9 +69,9 @@ app-usuarios, app-prestamos, app-login, app-footer {
 
 .admin-section {
   padding: clamp(1rem, 3vw, 1.75rem);
-  border: 1px solid #e2e7e5;
+  border: 1px solid var(--library-border);
   border-radius: 0.75rem;
-  background: white;
+  background: var(--library-paper);
 }
 
 .admin-title {
@@ -80,7 +95,7 @@ app-usuarios, app-prestamos, app-login, app-footer {
 
 .admin-table thead th {
   padding: 0.8rem 1rem;
-  background: #f1f5f3;
+  background: #e9e1cf;
   color: var(--library-ink);
   font-size: 0.72rem;
   font-weight: 700;
@@ -90,15 +105,15 @@ app-usuarios, app-prestamos, app-login, app-footer {
 
 .admin-table tbody td {
   padding: 0.8rem 1rem;
-  color: #45565b;
+  color: #515954;
   font-size: 0.9rem;
 }
 
 .admin-form {
   padding: 1rem;
-  border: 1px solid #e6e9e7;
+  border: 1px solid var(--library-border);
   border-radius: 0.75rem;
-  background: #fafbf9;
+  background: #f9f4e9;
 }
 
 .admin-form .form-label, .login-card .form-label {
@@ -110,21 +125,21 @@ app-usuarios, app-prestamos, app-login, app-footer {
 .admin-form .form-control:focus, .admin-form .form-select:focus,
 .login-card .form-control:focus {
   border-color: var(--library-green);
-  box-shadow: 0 0 0 0.2rem rgba(52, 104, 92, 0.12);
+  box-shadow: 0 0 0 0.2rem rgba(69, 99, 78, 0.16);
 }
 
 .badge-library {
-  background: #f3efcf;
-  color: #716613;
+  background: #f0e2b9;
+  color: #765a24;
 }
 
 .badge-success-soft {
-  background: #e5f0eb;
+  background: #e2ebdf;
   color: var(--library-green);
 }
 
 .badge-danger-soft {
-  background: #f8e7e9;
+  background: #f2e3e3;
   color: var(--library-red);
 }
 

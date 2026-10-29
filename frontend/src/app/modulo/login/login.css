@@ -6,7 +6,29 @@
   max-width: 520px;
   margin: 0 auto;
   padding: clamp(1.25rem, 4vw, 2rem);
-  border: 1px solid #e2e7e5;
+  border: 1px solid var(--library-border);
+  border-top: 3px solid var(--library-gold);
   border-radius: 0.75rem;
-  background: #fff;
+  background: var(--library-paper);
+}
+
+.login-card .form-control {
+  border-color: var(--library-border);
+  background-color: #fffdf8;
+}
+
+.login-card .btn-link {
+  color: var(--library-green);
+  text-decoration-color: var(--library-gold);
+  text-underline-offset: 0.15em;
+}
+
+.login-card .btn-link:hover {
+  color: var(--library-orange);
+}
+
+.login-card .alert-danger {
+  border-color: #d7b4b6;
+  background: #f2e3e3;
+  color: var(--library-red);
 }

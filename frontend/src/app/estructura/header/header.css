@@ -4,7 +4,8 @@
 
 .hero-banner {
   min-height: 220px;
-  background: #1e404f;
+  border-bottom: 4px solid var(--library-gold);
+  background: linear-gradient(112deg, var(--library-forest), var(--library-ink) 72%, #443d50);
   color: #fff;
 }
 

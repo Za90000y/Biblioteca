@@ -34,7 +34,7 @@ $env:DB_PASSWORD = "tu-clave-local"
 
 ## Ejecutar
 
-Abre `backend/pom.xml` como proyecto Maven en NetBeans, o ejecuta desde la raíz:
+Abre el `pom.xml` de la raíz como proyecto Maven en NetBeans; `backend` aparecerá como módulo con sus fuentes. También puedes abrir `backend/pom.xml` directamente. Para ejecutar desde la raíz:
 
 ```powershell
 mvn -f backend/pom.xml spring-boot:run

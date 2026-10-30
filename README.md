@@ -58,3 +58,25 @@ La aplicación queda en `http://localhost:4200`; el proxy de desarrollo reenvía
 - `BIBLIOTECARIO`: gestiona el catálogo y consulta lectores y sus préstamos activos.
 
 Las contraseñas se guardan con BCrypt. El backend también convierte a BCrypt las contraseñas preexistentes en texto plano al iniciar sesión correctamente.
+
+## EJEMPLO AÑADIR CAMPO PRÓLOGO EN LIBROS
+
+
+- Dentro de backend/src/main/java/com/biblioteca/biblioteca/:
+
+1. entidad/Libro.java: aquí se define el libro que se guarda en la base de datos. Agregar el campo permite que el backend lo maneje como parte de cada libro.
+2. dto/LibroRequest.java: define los datos que la API acepta al crear o editar un libro. Aquí se incorpora el campo y sus validaciones.
+3. service/LibroService.java: aquí se copian los datos de la solicitud al libro, tanto al crear como al actualizarlo. Si no se incluye aquí, el prólogo podría recibirse pero no guardarse.
+4. Base de datos: reservar espacio para el campo
+
+- En database/:
+
+1. schema.sql: describe la estructura inicial de las tablas. Agregar allí la columna permite que las instalaciones nuevas tengan el campo.
+2. Si la base de datos ya existe, también hay que aplicar una migración para agregar la columna a esa tabla existente. Editar schema.sql no cambia por sí solo las bases ya creadas.
+3. Frontend: enviar y mostrar el dato
+
+- Dentro de frontend/src/app/:
+
+1. core/biblioteca-api.service.ts: contiene las interfaces Libro y LibroRequest, que representan los datos recibidos y enviados por Angular. Se actualizan para que TypeScript reconozca prologo.
+2. modulo/libros/libros.ts: gestiona el formulario y la edición. Se actualizan los valores iniciales y la carga del prólogo al editar.
+3. modulo/libros/libros.html: contiene la pantalla de libros. Aquí se agrega el campo al formulario y se muestra en el detalle del libro.

@@ -30,7 +30,20 @@ public class PrestamoRequest {
     }
 
     @AssertTrue(message = "Un préstamo devuelto debe tener fecha de devolución")
-    public boolean isFechaDevolucionPresente() {
+    public boolean isFechaDevolucionPresente() { 
         return !devuelto || fechaDevolucion != null;
     }
+
+    //A ver si así si
+    //Dio error
+    //Dio mio benditooo
+
+    public boolean ElcosoEse(){
+        return devuelto || fechaDevolucion == null;
+    }
+
+    //Reto: IMPEDIR PRÉSTAMOS PENDIENTE CON FECHA DE DEVOLUCIÓN
+    //Situación: el DTO PrestamoRequest actualmente comprueba que un préstamo devuelto tenga fecha de devolución. 
+    // Debe añadirse una regla complementaria: si devuelto = false, la fechaDevolucion debe ser nula. Las operaciones POST/PUT de préstamos con la combinación inválida deben responder 400 Bad Request; una combinación coherente debe continuar funcionando.
+    //Quejesto por dios
 }

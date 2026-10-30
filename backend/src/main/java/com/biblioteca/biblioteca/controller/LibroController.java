@@ -2,12 +2,16 @@ package com.biblioteca.biblioteca.controller;
 
 import com.biblioteca.biblioteca.dto.LibroRequest;
 import com.biblioteca.biblioteca.entidad.Libro;
+import com.biblioteca.biblioteca.service.IsbnDuplicadoException;
 import com.biblioteca.biblioteca.service.LibroService;
 import jakarta.validation.Valid;
+import java.util.Map;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,10 +49,19 @@ public class LibroController {
     }
 
     @PostMapping
-    public ResponseEntity<Libro> crear(@Valid @RequestBody LibroRequest request) {
-        return libroService.guardar(request)
-                .map(guardado -> ResponseEntity.status(HttpStatus.CREATED).body(guardado))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<?> crear(@Valid @RequestBody LibroRequest request) {
+        try {
+            return libroService.guardar(request)
+                    .map(guardado -> ResponseEntity.status(HttpStatus.CREATED).body(guardado))
+                    .orElseGet(() -> ResponseEntity.badRequest().build());
+        } catch (IsbnDuplicadoException exception) {
+            return conflictoPorIsbn();
+        } catch (DataIntegrityViolationException exception) {
+            if (esRestriccionUnicaDeIsbn(exception)) {
+                return conflictoPorIsbn();
+            }
+            throw exception;
+        }
     }
 
     @PutMapping("/{id}")
@@ -67,5 +80,20 @@ public class LibroController {
         } catch (IllegalStateException exception) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+    private ResponseEntity<Map<String, String>> conflictoPorIsbn() {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("mensaje", IsbnDuplicadoException.MENSAJE));
+    }
+
+    private boolean esRestriccionUnicaDeIsbn(Throwable exception) {
+        for (Throwable causa = exception; causa != null; causa = causa.getCause()) {
+            if (causa instanceof ConstraintViolationException violation
+                    && "uk_libro_isbn".equalsIgnoreCase(violation.getConstraintName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

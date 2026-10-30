@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 public interface LibroRepository extends JpaRepository<Libro, Long> {
 
     boolean existsByAutor_Id(Long autorId);
+    
+    boolean existsByIsbn(String isbn);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select l from Libro l where l.id = :id")

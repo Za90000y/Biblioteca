@@ -34,6 +34,9 @@ public class LibroService {
     }
 
     public Optional<Libro> guardar(LibroRequest request) {
+        if (libroRepository.existsByIsbn(request.getIsbn())) {
+            throw new IsbnDuplicadoException();
+        }
         return autorRepository.findById(request.getAutorId()).map(autor -> {
             Libro libro = new Libro();
             copiarDatos(request, libro);
